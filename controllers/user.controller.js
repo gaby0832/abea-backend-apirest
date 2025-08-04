@@ -1,16 +1,30 @@
 import sql from '../config/sql.js';
 import bcrypt from 'bcrypt'
 import { createUserSchema, loginUserSchema } from '../schemas/user.schema.js'
+import { verifyToken } from '../utils/jwt.js';
 
-const listUsers = async (request, reply) => {
-  const users = await sql`SELECT * FROM users`
-  reply.send({ data: {users, success: true} })
-} 
+
+const infoUser = async (request, reply)=>{
+
+  try {
+    const token = request.headers.authorization?.split(' ')[1]
+    if (!token) return reply.code(401).send({ message: 'Token não fornecido' })
+
+    const userData = verifyToken(token)
+    if (!userData) return reply.code(401).send({ message: 'Token inválido' })
+
+      console.log(userData)
+    const user = await sql`SELECT id, name, email FROM users WHERE id = ${userData.id}`
+    if (!user.length) return reply.code(404).send({ message: 'Usuário não encontrado' })
+    return reply.send(user[0]) // retorna só um usuário
+  } catch (error) {
+    console.error(error)
+    return reply.code(500).send({ message: 'Erro interno do servidor' })
+  }
+}
 
 const createUser = async (request, reply) => {
   const { error, value } = createUserSchema.validate(request.body, { abortEarly: false })
-
-
 
   if (error) {
     const errorMessages = error.details.map(err => ({
@@ -24,7 +38,7 @@ const createUser = async (request, reply) => {
   const {name, email, password} = value;
 
   const userExists = await sql`
-    SELECT 1 FROM users WHERE email like ${email + '%'}
+    SELECT 1 FROM users WHERE email = ${email}
   `
   if (userExists.length > 0) {
     return reply.send({ data: {message: 'Usuário já existe'} })
@@ -56,8 +70,8 @@ const loginUser = async (request, reply) => {
   const {email, password} = value;
 
   const userExists = await sql`
-    SELECT email, password
-    FROM users WHERE email like ${email + '%'}
+    SELECT id, email, password
+    FROM users WHERE email = ${email}
   `
 
   if (userExists.length <= 0) {
@@ -80,5 +94,5 @@ const loginUser = async (request, reply) => {
 
 }
 
-export default { listUsers, createUser, loginUser }
+export default { infoUser, createUser, loginUser }
 

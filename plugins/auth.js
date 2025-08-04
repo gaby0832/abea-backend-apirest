@@ -5,7 +5,7 @@ dotenv.config()
 
 async function authPlugin(app, options){
     app.register(fastifyJwt, {
-        secret: process.env.JWT_SECRET || 'chave_super_secreta'
+        secret: process.env.JWT_SECRET,
     })
 
   // Decorador para ser usado nas rotas
