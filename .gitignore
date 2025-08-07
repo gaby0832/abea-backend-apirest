@@ -3,6 +3,8 @@
 # dependencies
 /db-init
 /node_modules
+/src/logs
+/src/plugins/logs
 /logs
 # env files (can opt-in for committing if needed)
 .env*

@@ -1,17 +1,17 @@
-import sql from './config/sql.js'
+import sql from './src/config/sql.js'
 
 const createTable = async () => {
   await sql`
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS refresh_tokens (
       id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      created_in TIMESTAMP DEFAULT NOW()
-    )
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
   `
 
-  console.log('✅ Tabela usuarios criada (ou já existia)')
+  console.log('✅ Tabela criada (ou já existia)')
   await sql.end() // Fecha a conexão
 }
 

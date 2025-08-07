@@ -1,11 +1,12 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import sql from './config/sql.js'
-import userRoutes from './routes/user.routes.js'
-import apiKeyAuth from './plugins/apiKeyAuth.js'
-import logRequest from './plugins/logRequest.js'
+import sql from './src/config/sql.js'
+import userRoutes from './src/routes/user.routes.js'
+import authRoutes from './src/routes/auth.routes.js'
+import apiKeyAuth from './src/plugins/apiKeyAuth.js'
+import logRequest from './src/plugins/logRequest.js'
 import rateLimit from '@fastify/rate-limit'
-import authPlugin from './plugins/auth.js'
+import authPlugin from './src/plugins/auth.js'
 
 const app = Fastify({ logger: true })
 
@@ -28,6 +29,7 @@ app.register(rateLimit, {
 app.register(authPlugin);
 app.register(apiKeyAuth);
 app.register(userRoutes, { prefix: '/users' });
+app.register(authRoutes, { prefix: '/auth'})
 
 
 export default app;
