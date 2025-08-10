@@ -2,11 +2,13 @@ import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import sql from './src/config/sql.js'
 import userRoutes from './src/routes/user.routes.js'
+import adminRoutes from './src/routes/admin.routes.js'
 import authRoutes from './src/routes/auth.routes.js'
 import apiKeyAuth from './src/plugins/apiKeyAuth.js'
 import logRequest from './src/plugins/logRequest.js'
 import rateLimit from '@fastify/rate-limit'
 import authPlugin from './src/plugins/auth.js'
+import isAdmin from './src/utils/isAdmin.js'
 
 const app = Fastify({ logger: true })
 
@@ -28,6 +30,10 @@ app.register(rateLimit, {
 
 app.register(authPlugin);
 app.register(apiKeyAuth);
+app.register(adminRoutes, { 
+  prefix: '/admin',
+  preHandler: [app.authenticate, isAdmin]
+})
 app.register(userRoutes, { prefix: '/users' });
 app.register(authRoutes, { prefix: '/auth'})
 

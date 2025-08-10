@@ -3,11 +3,11 @@ import postgres from 'postgres'
 
 dotenv.config();
 
-const sqlAdmin = postgres({
+const sql = postgres({
   host: 'localhost',
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
-  username: process.env.DB_ROOT_USER
+  username: process.env.DB_ROOT_USER,
   password: process.env.DB_ROOT_PASS,
 })
 
@@ -23,6 +23,6 @@ async function connectionTest(){
 connectionTest();
 
 
-export default sqlAdmin;
+export default sql;
 
 

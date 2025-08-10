@@ -2,7 +2,8 @@ import sql from '../config/sql.js';
 import bcrypt from 'bcrypt'
 import { createUserSchema, loginUserSchema } from '../schemas/user.schema.js'
 import { verifyAccessToken, generateAccessToken, generateRefreshToken } from '../utils/jwt.js';
-import { getUserById, getUserByEmail, createUser, createUserRefreshToken, deleteUserRefreshToken } from '../models/user.model.js'
+import { getUserById, getUserByEmail, createUser} from '../models/user.model.js'
+import { createUserRefreshToken, deleteUserRefreshToken } from '../models/auth.model.js'
 
 
 const infoUser = async (request, reply)=>{
@@ -76,11 +77,11 @@ const loginUser = async (request, reply) => {
   
   if (userExists && await bcrypt.compare(password, userExists[0].password)) {
   
-      const accessToken = generateAccessToken({ id: userExists[0].id, email: userExists[0].email });
+      const accessToken = generateAccessToken({ id: userExists[0].id, email: userExists[0].email, is_admin: userExists[0].is_admin });
       const refreshToken = generateRefreshToken({ id: userExists[0].id });
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const token = await createUserRefreshToken(userExists[0].id, refreshToken, expiresAt);
-    return reply.code(200).send({ data: { token: accessToken, refreshToken: refreshToken, message: 'Usuário logado com sucesso!', success: true } })
+      const token = await createUserRefreshToken(userExists[0].id, refreshToken, expiresAt);
+      return reply.code(200).send({ data: { token: accessToken, refreshToken: refreshToken, message: 'Usuário logado com sucesso!', success: true } })
   
   }else if(!userExists || await !bcrypt.compare(password, userExists[0].password)){
       return reply.code(401).send({  data: { message: 'Email ou senha invalidos' }});

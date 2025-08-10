@@ -1,13 +1,16 @@
-import sql from './src/config/sql.js'
+import sql from './src/config/sqlAdmin.js'
 
 const createTable = async () => {
   await sql`
-    CREATE TABLE IF NOT EXISTS refresh_tokens (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      token TEXT NOT NULL,
-      expires_at TIMESTAMP NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
+    CREATE TABLE IF NOT EXISTS dogs (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        age INTEGER NOT NULL,
+        available BOOLEAN DEFAULT TRUE,
+        image_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `
 
